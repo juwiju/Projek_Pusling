@@ -262,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: true,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final headerHeight = constraints.maxHeight * 0.315;
+          final headerHeight = constraints.maxHeight * 0.29;
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -284,7 +284,7 @@ class _LoginPageState extends State<LoginPage> {
                       topRight: Radius.circular(22),
                     ),
                   ),
-                  padding: const EdgeInsets.fromLTRB(20, 27, 20, 18),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                   child: _LoginForm(
                     selectedRole: selectedRole,
                     onRoleChanged: (role) {
@@ -406,7 +406,7 @@ class _HeaderContent extends StatelessWidget {
           'SISTEM LAYANAN KESEHATAN',
           style: GoogleFonts.inter(
             color: Colors.white,
-            fontSize: 9.5,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
             letterSpacing: 1.55,
           ),
@@ -446,7 +446,7 @@ class _HeaderContent extends StatelessWidget {
             'cepat, terhubung, dan transparan.',
             style: GoogleFonts.inter(
               color: Colors.white.withOpacity(.84),
-              fontSize: 11.5,
+              fontSize: 13,
               height: 1.65,
             ),
           ),
@@ -502,10 +502,10 @@ class _LoginForm extends StatelessWidget {
           'Pilih peran Anda untuk melanjutkan',
           style: GoogleFonts.inter(
             color: const Color(0xFF7A8799),
-            fontSize: 10.5,
+            fontSize: 13,
           ),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 0),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -557,7 +557,7 @@ class _LoginForm extends StatelessWidget {
                   obscurePassword ? 'Lihat' : 'Sembunyikan',
                   style: GoogleFonts.inter(
                     color: const Color(0xFF1686D2),
-                    fontSize: 9.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -588,7 +588,7 @@ class _LoginForm extends StatelessWidget {
               'Ingat saya',
               style: GoogleFonts.inter(
                 color: const Color(0xFF8190A5),
-                fontSize: 9.5,
+                fontSize: 12,
               ),
             ),
             const Spacer(),
@@ -599,7 +599,7 @@ class _LoginForm extends StatelessWidget {
                 'Lupa kata sandi?',
                 style: GoogleFonts.inter(
                   color: const Color(0xFF1686D2),
-                  fontSize: 9.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -651,7 +651,7 @@ class _LoginForm extends StatelessWidget {
               'Data Anda dilindungi dan terenkripsi',
               style: GoogleFonts.inter(
                 color: const Color(0xFF9BA9B9),
-                fontSize: 8.5,
+                fontSize: 10,
               ),
             ),
           ],
@@ -730,7 +730,7 @@ class _RoleCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
                         color: const Color(0xFF8A96A6),
-                        fontSize: 10,
+                        fontSize: 13,
                       ),
                     ),
                   ],
@@ -769,7 +769,7 @@ class _FieldLabel extends StatelessWidget {
       label,
       style: GoogleFonts.inter(
         color: const Color(0xFF53647A),
-        fontSize: 9.5,
+        fontSize: 12,
         fontWeight: FontWeight.w700,
       ),
     );
@@ -808,7 +808,7 @@ class _InputBox extends StatelessWidget {
         keyboardType: keyboardType,
         style: GoogleFonts.inter(
           color: const Color(0xFF34445B),
-          fontSize: 10.5,
+          fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
         cursorColor: const Color(0xFF1686D2),
@@ -828,7 +828,7 @@ class _InputBox extends StatelessWidget {
           hintText: hintText,
           hintStyle: GoogleFonts.inter(
             color: const Color(0xFF9AA6B5),
-            fontSize: 10,
+            fontSize: 12,
           ),
           suffixIcon: suffix,
           suffixIconConstraints: const BoxConstraints( minWidth: 0, minHeight: 40, ),
