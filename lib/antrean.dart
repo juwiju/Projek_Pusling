@@ -38,7 +38,12 @@ class Pasien {
 }
 
 class AntreanPasienPage extends StatefulWidget {
-  const AntreanPasienPage({super.key});
+  final Function(Pasien pasien)? onPilihPasien;
+
+  const AntreanPasienPage({
+    super.key,
+    this.onPilihPasien,
+  });
 
   @override
   State<AntreanPasienPage> createState() => _AntreanPasienPageState();
@@ -507,7 +512,13 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
 
   Widget _buildItemPasien(Pasien pasien) {
     return InkWell(
-      onTap: () => _tampilkanDetail(pasien),
+      onTap: () {
+        if (widget.onPilihPasien != null) {
+          widget.onPilihPasien!(pasien);
+        } else {
+          _tampilkanDetail(pasien);
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 10,
