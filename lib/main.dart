@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:device_preview/device_preview.dart';
 import 'dashboard.dart';
+import '../apoteker/manajemenObat.dart';
+import '../apoteker/dashboard_apoteker.dart';
+
 
 void main() {
   runApp(
@@ -303,10 +306,27 @@ class _LoginPageState extends State<LoginPage> {
                     selectedRoleName: selectedRoleName,
                     onForgotPassword: showForgotPassword,
                     onLogin: () {
+                      Widget destinationPage;
+
+                      switch (selectedRole) {
+                        case UserRole.apoteker:
+                          destinationPage = DashboardApoteker();
+                          break;
+                        case UserRole.dokter:
+                          destinationPage = const Main(); 
+                          break;
+                        case UserRole.petugas:
+                          destinationPage = const Main();
+                          break;
+                        case UserRole.puskesmas:
+                          destinationPage = const Main();
+                          break;
+                      }
+
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Main(),
+                          builder: (context) => destinationPage,
                         ),
                       );
                     },
