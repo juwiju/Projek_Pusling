@@ -5,6 +5,7 @@ import 'package:device_preview/device_preview.dart';
 import 'dashboard.dart';
 import '../apoteker/manajemenObat.dart';
 import '../apoteker/dashboard_apoteker.dart';
+import '../dokter/dashboard_dokter.dart';
 
 
 void main() {
@@ -313,7 +314,7 @@ class _LoginPageState extends State<LoginPage> {
                           destinationPage = DashboardApoteker();
                           break;
                         case UserRole.dokter:
-                          destinationPage = const Main(); 
+                          destinationPage = const DashboardDokter();
                           break;
                         case UserRole.petugas:
                           destinationPage = const Main();
