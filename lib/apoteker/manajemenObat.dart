@@ -365,7 +365,6 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
     );
   }
 
-  // WIDGET ROW SETIAP ITEM OBAT
   
     Widget _buildMedicineRow(int index) {
         final obat = obatList[index];
