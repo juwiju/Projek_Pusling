@@ -48,10 +48,25 @@ class _TambahObatPageState extends State<TambahObatPage> {
   final TextEditingController _kodeKFAController = TextEditingController();
   final TextEditingController _namaController = TextEditingController();
   final TextEditingController _beratController = TextEditingController();
-  final TextEditingController _bentukController = TextEditingController();
   final TextEditingController _stokAwalController = TextEditingController();
 
-  
+  final List<String> daftarBentukSediaan = [
+    // Padat
+    'Tablet',
+    'Kapsul',
+    'Serbuk',
+    'Pil',
+
+    // Cair
+    'Sirup',
+    'Tetes',
+
+    // Semi-padat
+    'Krim',
+    'Gel',
+  ];
+
+  String? _bentukController;
   
   void _simpanObatBaru() {
     if (_formKey.currentState!.validate()) {
@@ -61,7 +76,7 @@ class _TambahObatPageState extends State<TambahObatPage> {
         'kodeKFA': _kodeKFAController.text,
         'nama': _namaController.text,
         'berat': _beratController.text,
-        'bentuk': _bentukController.text,
+        'bentuk': _bentukController ?? '',
         'stokAwal': stokAwal,
         'stokSekarang': stokAwal, // Stok awal otomatis jadi stok sekarang
       };
@@ -75,7 +90,6 @@ class _TambahObatPageState extends State<TambahObatPage> {
     _kodeKFAController.dispose();
     _namaController.dispose();
     _beratController.dispose();
-    _bentukController.dispose();
     _stokAwalController.dispose();
     super.dispose();
   }
@@ -242,16 +256,82 @@ class _TambahObatPageState extends State<TambahObatPage> {
                       hint: 'Contoh: Paracetamol',
                     ),
                     const SizedBox(height: 16),
-                    _buildInputField(
-                      label: 'Berat / Dosis',
-                      controller: _beratController,
-                      hint: 'Contoh: 500 mg, 100 ml',
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Bentuk sediaan',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: darkText,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Wajib',
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                color: primaryBlue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          initialValue: _bentukController,
+                          isExpanded: true,
+                          menuMaxHeight: 300,
+                          hint: Text(
+                            'Pilih bentuk sediaan',
+                            style: GoogleFonts.inter(
+                              color: const Color(0xFF94A3B8),
+                              fontSize: 13,
+                            ),
+                          ),
+                          items: daftarBentukSediaan
+                              .map<DropdownMenuItem<String>>((bentuk) {
+                            return DropdownMenuItem<String>(
+                              value: bentuk,
+                              child: Text(
+                                bentuk,
+                                style: GoogleFonts.inter(fontSize: 13),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _bentukController = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Bentuk sediaan harus dipilih';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     _buildInputField(
-                      label: 'Bentuk sediaan',
-                      controller: _bentukController,
-                      hint: 'Contoh: Tablet, Kapsul, Sirup',
+                      label: 'Berat',
+                      controller: _beratController,
+                      hint: 'Contoh: 500 mg, 100 ml',
                     ),
                     const SizedBox(height: 16),
                     _buildInputField(
