@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'dashboard.dart';
-
+import 'apoteker/dashboard_apoteker.dart';
+import 'apoteker/detail_resep_sheet.dart';
 
 class PuslingApp extends StatelessWidget {
   const PuslingApp({super.key});
@@ -39,10 +40,12 @@ class Pasien {
 
 class AntreanPasienPage extends StatefulWidget {
   final Function(Pasien pasien)? onPilihPasien;
+  final bool isApoteker;
 
   const AntreanPasienPage({
     super.key,
     this.onPilihPasien,
+    this.isApoteker = false,
   });
 
   @override
@@ -56,8 +59,7 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
   static const Color abu = Color(0xFF8997A1);
   static const Color garis = Color(0xFFEAF0F4);
 
-  final TextEditingController pencarianController =
-      TextEditingController();
+  final TextEditingController pencarianController = TextEditingController();
 
   String filterAktif = 'Semua';
   int halamanAktif = 1;
@@ -146,8 +148,10 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
                   _buildPencarian(),
                   const SizedBox(height: 10),
                   _buildFilter(),
-                  const SizedBox(height: 14),
-                  _buildPanggilAntrean(),
+                  if (!widget.isApoteker) ...[
+                    const SizedBox(height: 14),
+                    _buildPanggilAntrean(),
+                  ],
                   const SizedBox(height: 18),
                   _buildDaftarAntrean(),
                 ],
@@ -160,7 +164,6 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _buildHeader() {
     return Container(
       color: Colors.white,
@@ -226,9 +229,9 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
               ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
-              'PE',
-              style: TextStyle(
+            child: Text(
+              widget.isApoteker ? 'AP' : 'PE',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -240,14 +243,13 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _buildJudul() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'PELAYANAN HARI INI',
-          style: TextStyle(
+        Text(
+          widget.isApoteker ? 'APOTEKER • HARI INI' : 'PELAYANAN HARI INI',
+          style: const TextStyle(
             color: biruTua,
             fontSize: 10,
             fontWeight: FontWeight.w800,
@@ -255,9 +257,9 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Antrean pasien',
-          style: TextStyle(
+        Text(
+          widget.isApoteker ? 'Antrean resep obat' : 'Antrean pasien',
+          style: const TextStyle(
             fontSize: 21,
             fontWeight: FontWeight.w500,
             color: Color(0xFF273540),
@@ -275,7 +277,6 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _buildPencarian() {
     return Container(
       height: 43,
@@ -305,7 +306,6 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _buildFilter() {
     final pilihan = ['Semua', 'Menunggu', 'Selesai'];
 
@@ -340,8 +340,7 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
                 style: TextStyle(
                   fontSize: 10,
                   color: aktif ? biruTua : abu,
-                  fontWeight:
-                      aktif ? FontWeight.w700 : FontWeight.normal,
+                  fontWeight: aktif ? FontWeight.w700 : FontWeight.normal,
                 ),
               ),
             ),
@@ -351,7 +350,6 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _buildPanggilAntrean() {
     return InkWell(
       borderRadius: BorderRadius.circular(15),
@@ -453,7 +451,6 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _buildDaftarAntrean() {
     final data = pasienTerfilter;
 
@@ -515,8 +512,10 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
       onTap: () {
         if (widget.onPilihPasien != null) {
           widget.onPilihPasien!(pasien);
+        } else if (widget.isApoteker) {
+          _tampilkanDetailResepApoteker(pasien);
         } else {
-          _tampilkanDetail(pasien);
+          _tampilkanDetailBiasa(pasien);
         }
       },
       child: Container(
@@ -592,7 +591,6 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
   Widget _labelStatus(String status) {
     Color warna;
     Color teks;
@@ -642,15 +640,12 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     );
   }
 
-  
-  void _tampilkanDetail(Pasien pasien) {
+  void _tampilkanDetailBiasa(Pasien pasien) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(22),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (context) {
         return Padding(
@@ -699,29 +694,145 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
           Expanded(
             child: Text(
               judul,
-              style: const TextStyle(
-                color: abu,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: abu, fontSize: 12),
             ),
           ),
           Text(
             isi,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
           ),
         ],
       ),
     );
   }
 
-  
+  void _tampilkanDetailResepApoteker(Pasien pasien) {
+    final bool sudahAdaResep =
+        pasien.status == 'Selesai' || pasien.status == 'Verifikasi';
+
+    if (!sudahAdaResep) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Resep Belum Tersedia',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Pasien ${pasien.nama} (${pasien.nomor}) saat ini masih berstatus "${pasien.status}". Resep obat baru akan muncul setelah pemeriksaan dokter selesai.',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: abu,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: biru,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Tutup'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      return;
+    }
+
+    final resepPerPasien = <String, List<DataMap>>{
+      'A-018': [
+        {
+          'kodeObat': '93001045',
+          'nama': 'Paracetamol 500 mg',
+          'merek': 'Sanmol',
+          'kategori': 'Analgesik & antipiretik',
+          'stokTersedia': 124,
+          'jumlahAngka': 10,
+          'satuan': 'tablet',
+          'aturanPakai': '3 × 1 sesudah makan',
+        },
+        {
+          'kodeObat': '93002118',
+          'nama': 'Vitamin B6 10 mg',
+          'merek': 'IPI',
+          'kategori': 'Vitamin',
+          'stokTersedia': 86,
+          'jumlahAngka': 10,
+          'satuan': 'tablet',
+          'aturanPakai': '1 × 1 sesudah makan',
+        },
+      ],
+      'A-017': [
+        {
+          'kodeObat': '93000582',
+          'nama': 'Amoxicillin 500 mg',
+          'merek': 'Generic',
+          'kategori': 'Antibiotik',
+          'stokTersedia': 32,
+          'jumlahAngka': 10,
+          'satuan': 'kapsul',
+          'aturanPakai': '3 × 1 sesudah makan',
+        },
+      ],
+    };
+
+    final daftarObatPasien = resepPerPasien[pasien.nomor] ?? [];
+
+    showDetailResepModal(
+      context,
+      pasien: {
+        'nomorAntrean': pasien.nomor,
+        'nama': pasien.nama,
+        'umur': pasien.umur,
+        'kategori': pasien.keterangan,
+        'nomorResep': 'RX-250618-${pasien.nomor.split('-').last}',
+        'dokter': 'dr. Raka Pratama',
+        'diagnosis': 'Demam dan nyeri ringan',
+        'obatList': daftarObatPasien,
+      },
+      onVerifikasi: () {
+        setState(() {
+          pasien.status = 'Selesai';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Resep ${pasien.nama} berhasil diverifikasi!'),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildBottomNavigation() {
     final menu = [
       [Icons.home_outlined, 'Beranda'],
-      [Icons.person_add_alt_1_outlined, 'Antrean'],
+      [
+        widget.isApoteker
+            ? Icons.assignment_outlined
+            : Icons.person_add_alt_1_outlined,
+        widget.isApoteker ? 'Resep' : 'Antrean',
+      ],
       [Icons.calendar_month_outlined, 'Jadwal'],
       [Icons.person_outline, 'Profil'],
     ];
@@ -742,25 +853,27 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
             child: InkWell(
               onTap: () {
                 if (index == 0) {
-                    Navigator.pushReplacement(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Main(),
+                      builder: (context) => widget.isApoteker
+                          ? const DashboardApoteker()
+                          : const Main(),
                     ),
-                    );
+                  );
                 } else if (index == 1) {
-                    setState(() {
+                  setState(() {
                     halamanAktif = 1;
-                    });
+                  });
                 } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text(
+                      content: Text(
                         '${menu[index][1]} belum dihubungkan.',
-                        ),
-                        duration: const Duration(seconds: 1),
+                      ),
+                      duration: const Duration(seconds: 1),
                     ),
-                    );
+                  );
                 }
               },
               child: Padding(
@@ -779,8 +892,7 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
                       style: TextStyle(
                         fontSize: 9,
                         color: aktif ? biruTua : abu,
-                        fontWeight:
-                            aktif ? FontWeight.w800 : FontWeight.normal,
+                        fontWeight: aktif ? FontWeight.w800 : FontWeight.normal,
                       ),
                     ),
                   ],
