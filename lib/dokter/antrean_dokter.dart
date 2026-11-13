@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:device_preview/device_preview.dart';
-import 'dashboard_dokter.dart';
+import '../models/pasien.dart';
 import 'rekam_medis.dart';
+import 'dashboard_dokter.dart';
 
 
 class PuslingApp extends StatelessWidget {
@@ -23,21 +23,6 @@ class PuslingApp extends StatelessWidget {
   }
 }
 
-class Pasien {
-  final String nomor;
-  final String nama;
-  final String umur;
-  final String keterangan;
-  String status;
-
-  Pasien({
-    required this.nomor,
-    required this.nama,
-    required this.umur,
-    required this.keterangan,
-    required this.status,
-  });
-}
 
 class AntreanPasienPage extends StatefulWidget {
   final Function(Pasien pasien)? onPilihPasien;
@@ -67,37 +52,47 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
 
   final List<Pasien> daftarPasien = [
     Pasien(
-      nomor: 'A-021',
+      idPasien: 'P004',
+      nomorAntrean: 'A-021',
       nama: 'Siti Aminah',
-      umur: '62 th',
+      umur: 62,
+      jenisKelamin: 'Perempuan',
       keterangan: 'Lansia',
       status: 'Menunggu',
     ),
     Pasien(
-      nomor: 'A-020',
+      idPasien: 'P005',
+      nomorAntrean: 'A-020',
       nama: 'Budi Santoso',
-      umur: '45 th',
+      umur: 45,
+      jenisKelamin: 'Laki-laki',
       keterangan: 'Dewasa',
       status: 'Asesmen selesai',
     ),
     Pasien(
-      nomor: 'A-019',
+      idPasien: 'P006',
+      nomorAntrean: 'A-019',
       nama: 'Nadia Putri',
-      umur: '28 th',
+      umur: 28,
+      jenisKelamin: 'Perempuan',
       keterangan: 'Ibu hamil',
       status: 'Diperiksa',
     ),
     Pasien(
-      nomor: 'A-018',
+      idPasien: 'P007',
+      nomorAntrean: 'A-018',
       nama: 'Rafi Pratama',
-      umur: '8 th',
+      umur: 8,
+      jenisKelamin: 'Laki-laki',
       keterangan: 'Anak',
       status: 'Selesai',
     ),
     Pasien(
-      nomor: 'A-017',
+      idPasien: 'P008',
+      nomorAntrean: 'A-017',
       nama: 'Kartini',
-      umur: '71 th',
+      umur: 71,
+      jenisKelamin: 'Perempuan',
       keterangan: 'Lansia',
       status: 'Selesai',
     ),
@@ -109,7 +104,7 @@ class _AntreanPasienPageState extends State<AntreanPasienPage> {
     return daftarPasien.where((pasien) {
       final cocokPencarian =
           pasien.nama.toLowerCase().contains(kataKunci) ||
-          pasien.nomor.toLowerCase().contains(kataKunci);
+          pasien.nomorAntrean.toLowerCase().contains(kataKunci);
 
       bool cocokStatus;
 
@@ -573,7 +568,7 @@ Widget _buildItemPasien(Pasien pasien) {
               borderRadius: BorderRadius.circular(9),
             ),
             child: Text(
-              pasien.nomor,
+              pasien.nomorAntrean,
               style: const TextStyle(
                 color: biruTua,
                 fontSize: 9,
@@ -601,7 +596,7 @@ Widget _buildItemPasien(Pasien pasien) {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${pasien.umur} · ${pasien.keterangan}',
+                  '${pasien.umur} th · ${pasien.keterangan ?? pasien.jenisKelamin}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -717,10 +712,10 @@ Widget _buildItemPasien(Pasien pasien) {
                 ),
               ),
               const SizedBox(height: 18),
-              _barisDetail('Nomor antrean', pasien.nomor),
+              _barisDetail('Nomor antrean', pasien.nomorAntrean),
               _barisDetail('Nama pasien', pasien.nama),
-              _barisDetail('Umur', pasien.umur),
-              _barisDetail('Keterangan', pasien.keterangan),
+              _barisDetail('Umur', '${pasien.umur} tahun'),
+              _barisDetail('Keterangan', pasien.keterangan ?? pasien.jenisKelamin),
               _barisDetail('Status', pasien.status),
               const SizedBox(height: 15),
               SizedBox(
@@ -795,7 +790,7 @@ Widget _buildItemPasien(Pasien pasien) {
                     Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const DashboardDokter(),
+                       builder: (context) => DashboardDokter(),
                     ),
                     );
                 } else if (index == 1) {
