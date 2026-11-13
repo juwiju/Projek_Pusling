@@ -1,9 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'antrean_dokter.dart';
 import '../main.dart' as app;
 import 'rekam_medis.dart';
+import 'resep_page.dart';
 
 class DashboardDokter extends StatelessWidget {
   const DashboardDokter({super.key});
@@ -11,6 +13,7 @@ class DashboardDokter extends StatelessWidget {
   static const Color darkText = Color(0xFF243447);
   static const Color mutedText = Color(0xFF7B8794);
 
+  // NAVIGASI REKAM MEDIS
   void _bukaAntrean(BuildContext context) {
     Navigator.push(
       context,
@@ -31,10 +34,31 @@ class DashboardDokter extends StatelessWidget {
     );
   }
 
+  // NAVIGASI BUAT RESEP
+  void _bukaResep(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const BuatResepPage(),
+      ),
+    );
+  }
+
+  // NAVIGASI SURAT RUJUKAN (SEMENTARA)
+  void _bukaSuratRujukan(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Halaman Surat Rujukan belum tersedia.'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9FC),
+
+      // APP BAR
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
@@ -87,16 +111,21 @@ class DashboardDokter extends StatelessWidget {
           ),
         ],
       ),
+
+      // BODY DASHBOARD
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             const Text(
               'Minggu, 27 September 2026',
               style: TextStyle(color: Colors.grey),
             ),
+
             const SizedBox(height: 8),
+
             const Text(
               'Selamat Pagi, Dokter!',
               style: TextStyle(
@@ -105,17 +134,22 @@ class DashboardDokter extends StatelessWidget {
                 color: darkText,
               ),
             ),
+
             const SizedBox(height: 4),
+
             const Text(
               'Dokter Pusling',
               style: TextStyle(color: Colors.blue),
             ),
+
             const SizedBox(height: 24),
 
+            // KARTU PRAKTIK HARI INI
             _buildTodayCard(),
 
             const SizedBox(height: 24),
 
+            // RINGKASAN HARI INI
             _buildSectionTitle(
               'Ringkasan hari ini',
               'Pembaruan pelayanan pasien',
@@ -133,7 +167,9 @@ class DashboardDokter extends StatelessWidget {
                     Colors.blue,
                   ),
                 ),
+
                 const SizedBox(width: 8),
+
                 Expanded(
                   child: _buildStatCard(
                     '08',
@@ -141,7 +177,9 @@ class DashboardDokter extends StatelessWidget {
                     Colors.orange,
                   ),
                 ),
+
                 const SizedBox(width: 8),
+
                 Expanded(
                   child: _buildStatCard(
                     '16',
@@ -154,66 +192,10 @@ class DashboardDokter extends StatelessWidget {
 
             const SizedBox(height: 28),
 
+            // ANTREAN PASIEN
+            // BAGIAN AKSES CEPAT SUDAH DIHAPUS
+
             _buildSectionTitle(
-              'Akses cepat',
-              'Kelola pelayanan kesehatan',
-              trailing: const SizedBox.shrink(),
-            ),
-
-            const SizedBox(height: 16),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickMenu(
-                    icon: Icons.medical_information_outlined,
-                    title: 'Rekam Medis',
-                    color: const Color(0xFF3994E8),
-                    backgroundColor: const Color(0xFFEAF4FF),
-                    onTap: () => _bukaAntrean(context),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _buildQuickMenu(
-                    icon: Icons.people_outline,
-                    title: 'Data Pasien',
-                    color: const Color(0xFF36B49A),
-                    backgroundColor: const Color(0xFFE6F8F2),
-                    onTap: () => _bukaAntrean(context),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickMenu(
-                    icon: Icons.medication_outlined,
-                    title: 'Resep Obat',
-                    color: const Color(0xFFE47791),
-                    backgroundColor: const Color(0xFFFFEEF2),
-                    onTap: () => _pesanBelumAda(context),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _buildQuickMenu(
-                    icon: Icons.description_outlined,
-                    title: 'Surat Rujukan',
-                    color: const Color(0xFFE6A637),
-                    backgroundColor: const Color(0xFFFFF5DE),
-                    onTap: () => _pesanBelumAda(context),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 28),
-                        _buildSectionTitle(
               'Antrean pasien',
               'Daftar pasien hari ini',
               trailing: TextButton(
@@ -224,6 +206,7 @@ class DashboardDokter extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            // PASIEN 1
             _buildPatientCard(
               queueNumber: 'A-017',
               name: 'Budi Santoso',
@@ -231,10 +214,14 @@ class DashboardDokter extends StatelessWidget {
               status: 'Selesai',
               statusColor: const Color(0xFF269B7B),
               statusBackground: const Color(0xFFE4F7EF),
+              onRekamMedis: () => _bukaAntrean(context),
+              onBuatResep: () => _bukaResep(context),
+              onSuratRujukan: () => _bukaSuratRujukan(context),
             ),
 
             const SizedBox(height: 12),
 
+            // PASIEN 2
             _buildPatientCard(
               queueNumber: 'A-018',
               name: 'Siti Aminah',
@@ -242,10 +229,14 @@ class DashboardDokter extends StatelessWidget {
               status: 'Diperiksa',
               statusColor: const Color(0xFF3478D4),
               statusBackground: const Color(0xFFE8F1FF),
+              onRekamMedis: () => _bukaAntrean(context),
+              onBuatResep: () => _bukaResep(context),
+              onSuratRujukan: () => _bukaSuratRujukan(context),
             ),
 
             const SizedBox(height: 12),
 
+            // PASIEN 3
             _buildPatientCard(
               queueNumber: 'A-019',
               name: 'Andi Pratama',
@@ -253,6 +244,9 @@ class DashboardDokter extends StatelessWidget {
               status: 'Menunggu',
               statusColor: const Color(0xFFD99424),
               statusBackground: const Color(0xFFFFF3D9),
+              onRekamMedis: () => _bukaAntrean(context),
+              onBuatResep: () => _bukaResep(context),
+              onSuratRujukan: () => _bukaSuratRujukan(context),
             ),
 
             const SizedBox(height: 24),
@@ -260,18 +254,12 @@ class DashboardDokter extends StatelessWidget {
         ),
       ),
 
+      // BOTTOM NAVIGATION
       bottomNavigationBar: _buildBottomNavigation(context),
     );
   }
 
-  void _pesanBelumAda(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Halaman belum tersedia.'),
-      ),
-    );
-  }
-
+  // KARTU PRAKTIK HARI INI
   Widget _buildTodayCard() {
     return Container(
       width: double.infinity,
@@ -307,7 +295,9 @@ class DashboardDokter extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
+
               const SizedBox(width: 8),
+
               const Expanded(
                 child: Text(
                   'PRAKTIK HARI INI',
@@ -317,6 +307,7 @@ class DashboardDokter extends StatelessWidget {
                   ),
                 ),
               ),
+
               const Text(
                 'Detail',
                 style: TextStyle(
@@ -324,6 +315,7 @@ class DashboardDokter extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
+
               const Icon(
                 Icons.chevron_right,
                 color: Colors.white,
@@ -366,6 +358,7 @@ class DashboardDokter extends StatelessWidget {
                   ),
                 ],
               ),
+
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -414,6 +407,7 @@ class DashboardDokter extends StatelessWidget {
                   ),
                 ),
               ),
+
               const Text(
                 '16 dari 24 pasien',
                 style: TextStyle(
@@ -428,6 +422,7 @@ class DashboardDokter extends StatelessWidget {
     );
   }
 
+  // JUDUL BAGIAN
   Widget _buildSectionTitle(
     String title,
     String subtitle, {
@@ -448,7 +443,9 @@ class DashboardDokter extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+
               const SizedBox(height: 8),
+
               Text(
                 subtitle,
                 style: const TextStyle(
@@ -459,7 +456,9 @@ class DashboardDokter extends StatelessWidget {
             ],
           ),
         ),
+
         const SizedBox(width: 8),
+
         Padding(
           padding: const EdgeInsets.only(top: 6),
           child: trailing,
@@ -468,6 +467,7 @@ class DashboardDokter extends StatelessWidget {
     );
   }
 
+  // BADGE LIVE
   Widget _buildLiveBadge() {
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -488,6 +488,7 @@ class DashboardDokter extends StatelessWidget {
     );
   }
 
+  // KARTU STATISTIK
   Widget _buildStatCard(
     String number,
     String label,
@@ -510,7 +511,9 @@ class DashboardDokter extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
+
           const SizedBox(height: 6),
+
           Text(
             label,
             style: const TextStyle(
@@ -522,58 +525,8 @@ class DashboardDokter extends StatelessWidget {
       ),
     );
   }
-    Widget _buildQuickMenu({
-    required IconData icon,
-    required String title,
-    required Color color,
-    required Color backgroundColor,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 21,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: darkText,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right,
-              color: mutedText,
-              size: 18,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
+  // KARTU ANTREAN PASIEN
   Widget _buildPatientCard({
     required String queueNumber,
     required String name,
@@ -581,6 +534,9 @@ class DashboardDokter extends StatelessWidget {
     required String status,
     required Color statusColor,
     required Color statusBackground,
+    required VoidCallback onRekamMedis,
+    required VoidCallback onBuatResep,
+    required VoidCallback onSuratRujukan,
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -588,81 +544,221 @@ class DashboardDokter extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEAF4FF),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.person_outline,
-              color: Color(0xFF3994E8),
-              size: 26,
-            ),
-          ),
 
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  queueNumber,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: mutedText,
-                  ),
+          // INFORMASI PASIEN
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAF4FF),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: darkText,
-                  ),
+                child: const Icon(
+                  Icons.person_outline,
+                  color: Color(0xFF3994E8),
+                  size: 26,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  details,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: mutedText,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 6),
-
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 9,
-              vertical: 7,
-            ),
-            decoration: BoxDecoration(
-              color: statusBackground,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              status,
-              style: TextStyle(
-                fontSize: 10,
-                color: statusColor,
-                fontWeight: FontWeight.w500,
               ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      queueNumber,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: mutedText,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: darkText,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      details,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: mutedText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 6),
+
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: statusBackground,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  status,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: statusColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          const Divider(height: 1),
+
+          const SizedBox(height: 12),
+
+          // TIGA TOMBOL AKSI
+          const Text(
+            'Aksi Pasien',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: darkText,
             ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Row(
+            children: [
+              // REKAM MEDIS
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onRekamMedis,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF3994E8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 3,
+                      vertical: 10,
+                    ),
+                    side: const BorderSide(
+                      color: Color(0xFF3994E8),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Icon(
+                        Icons.medical_information_outlined,
+                        size: 18,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Rekam Medis',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 6),
+
+              // BUAT RESEP
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onBuatResep,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFD66C8B),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 3,
+                      vertical: 10,
+                    ),
+                    side: const BorderSide(
+                      color: Color(0xFFD66C8B),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Icon(
+                        Icons.medication_outlined,
+                        size: 18,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Buat Resep',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 6),
+
+              // SURAT RUJUKAN
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: onSuratRujukan,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFD99A30),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 3,
+                      vertical: 10,
+                    ),
+                    side: const BorderSide(
+                      color: Color(0xFFD99A30),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Column(
+                    children: [
+                      Icon(
+                        Icons.description_outlined,
+                        size: 18,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Surat Rujukan',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
+  // BOTTOM NAVIGATION
   Widget _buildBottomNavigation(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -705,7 +801,7 @@ class DashboardDokter extends StatelessWidget {
                 label: 'Resep',
                 isActive: false,
                 onTap: () {
-                  _pesanBelumAda(context);
+                  _bukaResep(context);
                 },
               ),
 
@@ -714,7 +810,11 @@ class DashboardDokter extends StatelessWidget {
                 label: 'Profil',
                 isActive: false,
                 onTap: () {
-                  _pesanBelumAda(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Halaman Profil belum tersedia.'),
+                    ),
+                  );
                 },
               ),
             ],
@@ -724,6 +824,7 @@ class DashboardDokter extends StatelessWidget {
     );
   }
 
+  // ITEM BOTTOM NAVIGATION
   Widget _buildNavItem({
     required IconData icon,
     required String label,
@@ -746,7 +847,9 @@ class DashboardDokter extends StatelessWidget {
                 color: isActive ? activeColor : inactiveColor,
                 size: 24,
               ),
+
               const SizedBox(height: 5),
+
               Text(
                 label,
                 style: TextStyle(

@@ -526,7 +526,7 @@ class _LoginForm extends StatelessWidget {
             fontSize: 13,
           ),
         ),
-        const SizedBox(height: 0),
+        
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -546,7 +546,7 @@ class _LoginForm extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 18),
+        
         const _FieldLabel(label: 'Email atau username'),
         const SizedBox(height: 6),
         _InputBox(
@@ -747,11 +747,11 @@ class _RoleCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       info.subtitle,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
                         color: const Color(0xFF8A96A6),
-                        fontSize: 13,
+                        fontSize: 10,
                       ),
                     ),
                   ],
