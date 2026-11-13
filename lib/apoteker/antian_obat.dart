@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../antrean.dart';
 import '../apoteker/manajemenObat.dart';
 import '../main.dart';
+import 'detail_resep_sheet.dart';
 
 class DashboardApoteker extends StatelessWidget {
   const DashboardApoteker({super.key});
@@ -250,33 +251,60 @@ class DashboardApoteker extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              _buildPatientCard(
-                queueNumber: 'A-017',
-                name: 'Budi Santoso',
-                details: '45 tahun • Dewasa',
-                status: 'Selesai',
-                statusColor: const Color(0xFF269B7B),
-                statusBackground: const Color(0xFFE4F7EF),
-              ),
-              const SizedBox(height: 12),
-
-              _buildPatientCard(
-                queueNumber: 'A-018',
-                name: 'Siti Aminah',
-                details: '62 tahun • Lansia',
-                status: 'Verifikasi',
-                statusColor: const Color(0xFFD99424),
-                statusBackground: const Color(0xFFFFF3D9),
-              ),
-              const SizedBox(height: 12),
-
-              _buildPatientCard(
-                queueNumber: 'A-019',
-                name: 'Andi Pratama',
-                details: '27 tahun • Dewasa',
-                status: 'Diperiksa',
-                statusColor: const Color(0xFF3478D4),
-                statusBackground: const Color(0xFFE8F1FF),
+              // GANTI MULAI BARIS 282 (Kartu Siti Aminah)
+              InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: () {
+                  showDetailResepModal(
+                    context,
+                    pasien: {
+                      'nomorAntrean': 'A-018',
+                      'nama': 'Siti Aminah',
+                      'umur': '62 th',
+                      'kategori': 'Lansia',
+                      'nomorResep': 'RX-250618-021',
+                      'dokter': 'dr. Raka Pratama',
+                      'diagnosis': 'Demam dan nyeri ringan',
+                      'obatList': [
+                        {
+                          'kodeObat': '93001045',
+                          'nama': 'Paracetamol 500 mg',
+                          'merek': 'Sanmol',
+                          'kategori': 'Analgesik & antipiretik',
+                          'stokTersedia': 124,
+                          'jumlahAngka': 10,
+                          'satuan': 'tablet',
+                          'aturanPakai': '3 × 1 sesudah makan',
+                        },
+                        {
+                          'kodeObat': '93002118',
+                          'nama': 'Vitamin B6 10 mg',
+                          'merek': 'IPI',
+                          'kategori': 'Vitamin',
+                          'stokTersedia': 86,
+                          'jumlahAngka': 10,
+                          'satuan': 'tablet',
+                          'aturanPakai': '1 × 1 sesudah makan',
+                        },
+                      ],
+                    },
+                    onVerifikasi: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Resep Siti Aminah berhasil diverifikasi!'),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: _buildPatientCard(
+                  queueNumber: 'A-018',
+                  name: 'Siti Aminah',
+                  details: '62 tahun • Lansia',
+                  status: 'Verifikasi',
+                  statusColor: const Color(0xFFD99424),
+                  statusBackground: const Color(0xFFFFF3D9),
+                ),
               ),
 
               const SizedBox(height: 24),

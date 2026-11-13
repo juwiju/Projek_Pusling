@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:device_preview/device_preview.dart';
 import '../antrean.dart';
-import '../pendaftaran.dart';
 import '../apoteker/manajemenObat.dart';
 import '../main.dart';
 
-
-
 class DashboardApoteker extends StatelessWidget {
-  const DashboardApoteker({Key? key}) : super(key: key);
+  const DashboardApoteker({super.key});
 
   static const Color darkText = Color(0xFF243447);
   static const Color mutedText = Color(0xFF7B8794);
@@ -17,279 +13,280 @@ class DashboardApoteker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFFF7F9FC),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.blue,
-          elevation: 0,
-          title: const Row(
-            children: [
-              Icon(Icons.favorite_border),
-              SizedBox(width: 8),
-              Text('Pusling+'),
-            ],
-          ),
-          actions: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0F4F8),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Icon(
-                    Icons.notifications_none_rounded,
-                    color: Color(0xFF334155),
-                    size: 22,
+      backgroundColor: const Color(0xFFF7F9FC),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.blue,
+        elevation: 0,
+        title: const Row(
+          children: [
+            Icon(Icons.favorite_border),
+            SizedBox(width: 8),
+            Text('Pusling+'),
+          ],
+        ),
+        actions: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F4F8),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(
+                  Icons.notifications_none_rounded,
+                  color: Color(0xFF334155),
+                  size: 22,
+                ),
+                Positioned(
+                  top: 10,
+                  right: 11,
+                  child: Container(
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE11D48),
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                  Positioned(
-                    top: 10,
-                    right: 11,
-                    child: Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE11D48),
-                        shape: BoxShape.circle,
-                      ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  (route) => false,
+                );
+              },
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1686D2), Color(0xFF0D91B9)],
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  'AP',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // SAPAAN
+              const Text(
+                'Minggu, 27 September 2026',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Selamat Pagi, Sari!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: darkText,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Petugas Pusling (Apoteker)',
+                style: TextStyle(color: Colors.blue),
+              ),
+              const SizedBox(height: 24),
+
+              _buildTodayCard(),
+              const SizedBox(height: 24),
+
+              _buildSectionTitle(
+                'Ringkasan hari ini',
+                'Pembaruan secara real-time',
+                trailing: _buildLiveBadge(),
+              ),
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard(
+                      '24',
+                      'Total pasien',
+                      Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildStatCard(
+                      '08',
+                      'Menunggu resep',
+                      Colors.orange,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildStatCard(
+                      '16',
+                      'Resep diserahkan',
+                      Colors.teal,
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 10),
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                    (route) => false,
-                  );
-                },
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF1686D2), Color(0xFF0D91B9)],
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    'AP',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+
+              const SizedBox(height: 28),
+
+              _buildSectionTitle(
+                'Akses cepat',
+                'Kelola layanan Pusling',
+                trailing: const SizedBox.shrink(),
+              ),
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildQuickMenu(
+                      icon: Icons.assignment_outlined,
+                      title: 'Daftar Resep',
+                      color: const Color(0xFF3994E8),
+                      backgroundColor: const Color(0xFFEAF4FF),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const AntreanPasienPage(isApoteker: true),
+                          ),
+                        );
+                      },
                     ),
                   ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildQuickMenu(
+                      icon: Icons.medication_outlined,
+                      title: 'Manajemen Obat',
+                      color: const Color(0xFF36B49A),
+                      backgroundColor: const Color(0xFFE6F8F2),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ManajemenObatPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildQuickMenu(
+                      icon: Icons.history_rounded,
+                      title: 'Riwayat Stok',
+                      color: const Color(0xFFE47791),
+                      backgroundColor: const Color(0xFFFFEEF2),
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Halaman Riwayat Stok belum dibuat.'),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: SizedBox(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+
+              // ANTREAN RESEP TERBARU
+              _buildSectionTitle(
+                'Antrean resep terbaru',
+                'Daftar pasien menunggu obat',
+                trailing: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const AntreanPasienPage(isApoteker: true),
+                      ),
+                    );
+                  },
+                  child: const Text('Lihat semua'),
                 ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 16),
 
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // SAPAAN
-                const Text(
-                  'Minggu, 27 September 2026',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
+              _buildPatientCard(
+                queueNumber: 'A-017',
+                name: 'Budi Santoso',
+                details: '45 tahun • Dewasa',
+                status: 'Selesai',
+                statusColor: const Color(0xFF269B7B),
+                statusBackground: const Color(0xFFE4F7EF),
+              ),
+              const SizedBox(height: 12),
 
-                const Text(
-                  'Selamat Pagi, Sari!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: darkText,
-                  ),
-                ),
-                const SizedBox(height: 4),
+              _buildPatientCard(
+                queueNumber: 'A-018',
+                name: 'Siti Aminah',
+                details: '62 tahun • Lansia',
+                status: 'Verifikasi',
+                statusColor: const Color(0xFFD99424),
+                statusBackground: const Color(0xFFFFF3D9),
+              ),
+              const SizedBox(height: 12),
 
-                const Text(
-                  'Petugas Pusling',
-                  style: TextStyle(color: Colors.blue),
-                ),
-                const SizedBox(height: 24),
+              _buildPatientCard(
+                queueNumber: 'A-019',
+                name: 'Andi Pratama',
+                details: '27 tahun • Dewasa',
+                status: 'Diperiksa',
+                statusColor: const Color(0xFF3478D4),
+                statusBackground: const Color(0xFFE8F1FF),
+              ),
 
-                
-                _buildTodayCard(),
-                const SizedBox(height: 24),
-
-                
-                _buildSectionTitle(
-                  'Ringkasan hari ini',
-                  'Pembaruan secara real-time',
-                  trailing: _buildLiveBadge(),
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        '24',
-                        'Total pasien',
-                        Colors.blue,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _buildStatCard(
-                        '08',
-                        'Menunggu pelayanan',
-                        Colors.orange,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _buildStatCard(
-                        '16',
-                        'Sudah dilayani',
-                        Colors.teal,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 28),
-
-                
-                _buildSectionTitle(
-                  'Akses cepat',
-                  'Kelola layanan Pusling',
-                  trailing: const SizedBox.shrink(),
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child:_buildQuickMenu(
-                        icon: Icons.person_add_alt_1,
-                        title: 'Daftar Resep',
-                        color: const Color(0xFF3994E8),
-                        backgroundColor: const Color(0xFFEAF4FF),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DashboardApoteker(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _buildQuickMenu(
-                        icon: Icons.monitor_heart_outlined,
-                        title: 'Manajemen Obat',
-                        color: const Color(0xFF36B49A),
-                        backgroundColor: const Color(0xFFE6F8F2),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ManajemenObatPage(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildQuickMenu(
-                        icon: Icons.favorite_border,
-                        title: 'Riwayat Stok',
-                        color: const Color(0xFFE47791),
-                        backgroundColor: const Color(0xFFFFEEF2),
-                      ),
-                    ),
-                    const SizedBox(width: 10), 
-                    const Expanded(
-                      child: SizedBox(), 
-                    ),
-                    
-                  ],
-                ),
-                const SizedBox(height: 28),
-
-                // ANTREAN TERBARU
-                _buildSectionTitle(
-                  'Antrean terbaru',
-                  'Daftar pasien hari ini',
-                  trailing: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AntreanPasienPage(),
-                        ),
-                      );
-                    },
-                    child: const Text('Lihat semua'),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                _buildPatientCard(
-                  queueNumber: 'A-017',
-                  name: 'Budi Santoso',
-                  details: '45 tahun • Laki-laki',
-                  status: 'Selesai',
-                  statusColor: const Color(0xFF269B7B),
-                  statusBackground: const Color(0xFFE4F7EF),
-                ),
-                const SizedBox(height: 12),
-
-                _buildPatientCard(
-                  queueNumber: 'A-018',
-                  name: 'Siti Aminah',
-                  details: '32 tahun • Perempuan',
-                  status: 'Dilayani',
-                  statusColor: const Color(0xFF3478D4),
-                  statusBackground: const Color(0xFFE8F1FF),
-                ),
-                const SizedBox(height: 12),
-
-                _buildPatientCard(
-                  queueNumber: 'A-019',
-                  name: 'Andi Pratama',
-                  details: '27 tahun • Laki-laki',
-                  status: 'Menunggu',
-                  statusColor: const Color(0xFFD99424),
-                  statusBackground: const Color(0xFFFFF3D9),
-                ),
-
-                const SizedBox(height: 24),
-              ],
-            ),
+              const SizedBox(height: 24),
+            ],
           ),
         ),
-        bottomNavigationBar: _buildBottomNavigation(context),
+      ),
+      bottomNavigationBar: _buildBottomNavigation(context),
     );
   }
 
-  
   Widget _buildTodayCard() {
     return Container(
       width: double.infinity,
@@ -326,7 +323,6 @@ class DashboardApoteker extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-
               const Expanded(
                 child: Text(
                   'BERLANGSUNG HARI INI',
@@ -336,7 +332,6 @@ class DashboardApoteker extends StatelessWidget {
                   ),
                 ),
               ),
-
               const Text(
                 'Detail',
                 style: TextStyle(
@@ -345,7 +340,6 @@ class DashboardApoteker extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-
               const Icon(
                 Icons.chevron_right,
                 color: Colors.white,
@@ -353,9 +347,7 @@ class DashboardApoteker extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 26),
-
           const Text(
             'Pusling Kelurahan Sukamaju',
             style: TextStyle(
@@ -364,9 +356,7 @@ class DashboardApoteker extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-
           const SizedBox(height: 18),
-
           const Wrap(
             spacing: 18,
             runSpacing: 10,
@@ -409,9 +399,7 @@ class DashboardApoteker extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 26),
-
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: const LinearProgressIndicator(
@@ -423,21 +411,19 @@ class DashboardApoteker extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 12),
-
-          Row(
+          const Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Progress pelayanan',
+                  'Progress penyiapan obat',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 12,
                   ),
                 ),
               ),
-              const Text(
+              Text(
                 '16 dari 24 pasien',
                 style: TextStyle(
                   color: Colors.white,
@@ -451,7 +437,6 @@ class DashboardApoteker extends StatelessWidget {
     );
   }
 
-  
   Widget _buildSectionTitle(
     String title,
     String subtitle, {
@@ -492,7 +477,6 @@ class DashboardApoteker extends StatelessWidget {
     );
   }
 
-  
   Widget _buildLiveBadge() {
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -513,7 +497,6 @@ class DashboardApoteker extends StatelessWidget {
     );
   }
 
-  
   Widget _buildStatCard(
     String number,
     String label,
@@ -548,8 +531,7 @@ class DashboardApoteker extends StatelessWidget {
       ),
     );
   }
-  
-  
+
   Widget _buildQuickMenu({
     required IconData icon,
     required String title,
@@ -602,7 +584,6 @@ class DashboardApoteker extends StatelessWidget {
     );
   }
 
-  
   Widget _buildPatientCard({
     required String queueNumber,
     required String name,
@@ -632,9 +613,7 @@ class DashboardApoteker extends StatelessWidget {
               size: 26,
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,7 +626,6 @@ class DashboardApoteker extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-
                 Text(
                   name,
                   style: const TextStyle(
@@ -657,7 +635,6 @@ class DashboardApoteker extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-
                 Text(
                   details,
                   style: const TextStyle(
@@ -668,9 +645,7 @@ class DashboardApoteker extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(width: 6),
-
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 9,
@@ -693,8 +668,7 @@ class DashboardApoteker extends StatelessWidget {
       ),
     );
   }
-  
-  
+
   Widget _buildBottomNavigation(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -723,15 +697,15 @@ class DashboardApoteker extends StatelessWidget {
                 onTap: () {},
               ),
               _buildNavItem(
-                icon: Icons.people_outline_rounded,
-                label: 'Antrean',
+                icon: Icons.assignment_outlined,
+                label: 'Resep',
                 isActive: false,
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const AntreanPasienPage(),
+                          const AntreanPasienPage(isApoteker: true),
                     ),
                   );
                 },
@@ -767,7 +741,6 @@ class DashboardApoteker extends StatelessWidget {
     );
   }
 
-  
   Widget _buildNavItem({
     required IconData icon,
     required String label,
@@ -795,8 +768,7 @@ class DashboardApoteker extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight:
-                      isActive ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                   color: isActive ? activeColor : inactiveColor,
                 ),
               ),
@@ -806,6 +778,4 @@ class DashboardApoteker extends StatelessWidget {
       ),
     );
   }
-
-
 }
