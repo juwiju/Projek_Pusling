@@ -6,6 +6,7 @@ import '../models/pasien.dart';
 import '../models/data_pasien.dart';
 import 'rekam_medis.dart';
 import 'resep_page.dart';
+import '../main.dart';
 
 class DashboardDokter extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -120,17 +121,17 @@ class _DashboardDokterState extends State<DashboardDokter> {
             padding: const EdgeInsets.only(right: 20),
             child: InkWell(
               onTap: () {
+                // Opsional: jalankan fungsi onLogout dulu jika ada (misal untuk hapus token/session)
                 if (widget.onLogout != null) {
                   widget.onLogout!();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Hubungkan aksi keluar ke halaman Login di main.dart.',
-                      ),
-                    ),
-                  );
                 }
+
+                // Langsung pindah ke LoginPage dan hapus semua rute sebelumnya
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  (route) => false,
+                );
               },
               child: Container(
                 width: 40,
