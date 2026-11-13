@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../main.dart';
 import 'dashboard_apoteker.dart';
 import 'tambahObat.dart'; 
+import 'editObat.dart';
 
 class ManajemenObatPage extends StatefulWidget {
   const ManajemenObatPage({super.key});
@@ -18,7 +19,30 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
   static const Color mutedText = Color(0xFF64748B);
   static const Color lightBlue = Color(0xFFEBF3FB);
 
-  
+  bool _isKelolaAktif = false;
+
+  Future<void> _editObat(int index) async {
+    final hasil = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditObatPage(
+          obat: obatList[index],
+        ),
+      ),
+    );
+
+    if (hasil != null) {
+      setState(() {
+        obatList[index] = hasil;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data obat berhasil diperbarui!'),
+        ),
+      );
+    }
+  }
 
   void _ubahStok(int index, int perubahan) {
     setState(() {
@@ -29,6 +53,50 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
         obatList[index]['stokSekarang'] = stokBaru;
       }
     });
+  }
+
+  void _hapusObat(int index) {
+    final namaObat = obatList[index]['nama'];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Hapus Obat'),
+          content: Text(
+            'Yakin ingin menghapus $namaObat?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  obatList.removeAt(index);
+                });
+
+                Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('$namaObat berhasil dihapus!'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              },
+              child: const Text(
+                'Hapus',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -272,40 +340,59 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
       ),
 
       // TOMBOL MELAYANG (+) UNTUK PINDAH HALAMAN FORM TAMBAH OBAT
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final newObat = await Navigator.push<Map<String, dynamic>>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const TambahObatPage(),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Tombol Kelola Obat
+          FloatingActionButton(
+            heroTag: 'kelolaObat',
+            onPressed: () {
+              setState(() {
+                _isKelolaAktif = !_isKelolaAktif;
+              });
+            },
+            backgroundColor: primaryBlue,
+            tooltip: 'Kelola Obat',
+            child: Icon(
+              _isKelolaAktif ? Icons.close : Icons.edit,
+              color: Colors.white,
             ),
-          );
-
-          if (newObat != null) {
-            setState(() {
-              obatList.add(newObat);
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Obat ${newObat['nama']} berhasil ditambahkan!',
-                  style: GoogleFonts.inter(),
-                ),
-                backgroundColor: primaryBlue,
-              ),
-            );
-          }
-        },
-        backgroundColor: primaryBlue,
-        elevation: 4,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: Text(
-          'Tambah Obat',
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
           ),
-        ),
+
+          const SizedBox(width: 12),
+
+          // Tombol Tambah Obat
+          FloatingActionButton(
+            heroTag: 'tambahObat',
+            onPressed: () async {
+              final newObat = await Navigator.push<Map<String, dynamic>>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TambahObatPage(),
+                ),
+              );
+
+              if (newObat != null) {
+                setState(() {
+                  obatList.add(newObat);
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Obat berhasil ditambahkan!'),
+                  ),
+                );
+              }
+            },
+            backgroundColor: primaryBlue,
+            tooltip: 'Tambah Obat',
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
 
       // BOTTOM NAVIGATION BAR
@@ -365,7 +452,6 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
     );
   }
 
-  // WIDGET ROW SETIAP ITEM OBAT
   
     Widget _buildMedicineRow(int index) {
         final obat = obatList[index];
@@ -428,7 +514,7 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
                                                 '${obat['bentuk']}',
                                                 style: GoogleFonts.inter(
                                                     fontSize: 11,
-                                                    color: mutedText,
+                                                    color: primaryBlue,
                                                 ),
                                                 ),
                                             ],
@@ -437,22 +523,22 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
                                 ),
                             ),
 
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 5),
 
                             // STOK AWAL DI SEBELAH KANAN
                             SizedBox(
-                                width: 48,
+                                width: 50,
                                 child: Column(
                                     children: [
                                         Text(
                                             'Stok awal',
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.inter(
-                                            fontSize: 9,
+                                            fontSize: 10,
                                             color: mutedText,
                                             ),
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 13),
                                         Text(
                                             '${obat['stokAwal']}',
                                             style: GoogleFonts.inter(
@@ -469,19 +555,19 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
 
                             // STOK SEKARANG DI SEBELAH KANAN
                             SizedBox(
-                                width: 66,
+                                width: 75,
                                 child: Column(
                                     children: [
                                         Text(
                                             'Stok sekarang',
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.inter(
-                                            fontSize: 9,
+                                            fontSize: 10,
                                             color: primaryBlue,
                                             fontWeight: FontWeight.w600,
                                             ),
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 13),
                                         Text(
                                             '${obat['stokSekarang']}',
                                             style: GoogleFonts.inter(
@@ -496,6 +582,39 @@ class _ManajemenObatPageState extends State<ManajemenObatPage> {
                         ],
                     ),
                 ),
+
+                if (_isKelolaAktif)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () => _editObat(index),
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            size: 16,
+                          ),
+                          label: const Text('Edit'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: primaryBlue,
+                          ),
+                        ),
+
+                        TextButton.icon(
+                          onPressed: () => _hapusObat(index),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            size: 16,
+                          ),
+                          label: const Text('Hapus'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
                 if (index < obatList.length - 1)
                     const Divider(
