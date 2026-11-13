@@ -1,30 +1,39 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'antrean_dokter.dart';
-import '../main.dart' as app;
+import 'antrean_dokter.dart' show AntreanPasienPage;
+import '../models/pasien.dart';
+import '../models/data_pasien.dart';
 import 'rekam_medis.dart';
 import 'resep_page.dart';
+import '../main.dart';
 
-class DashboardDokter extends StatelessWidget {
-  const DashboardDokter({super.key});
+class DashboardDokter extends StatefulWidget {
+  final VoidCallback? onLogout;
 
+  const DashboardDokter({super.key, this.onLogout});
+
+  @override
+  State<DashboardDokter> createState() =>
+      _DashboardDokterState();
+}
+
+class _DashboardDokterState extends State<DashboardDokter> {
   static const Color darkText = Color(0xFF243447);
   static const Color mutedText = Color(0xFF7B8794);
 
-  // NAVIGASI REKAM MEDIS
+  // NAVIGASI ANTREAN
   void _bukaAntrean(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => AntreanPasienPage(
-          onPilihPasien: (dynamic pasien) {
+          onPilihPasien: (Pasien pasien) {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => RekamMedisPage(
-                  pasien: pasien as Pasien,
+                  pasien: pasien,
                 ),
               ),
             );
@@ -35,22 +44,57 @@ class DashboardDokter extends StatelessWidget {
   }
 
   // NAVIGASI BUAT RESEP
-  void _bukaResep(BuildContext context) {
+  // Mengirim pasien yang dipilih ke halaman resep.
+  void _bukaResep(BuildContext context, Pasien pasien) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const BuatResepPage(),
+        builder: (_) => BuatResepPage(
+          pasien: pasien,
+        ),
       ),
     );
   }
 
-  // NAVIGASI SURAT RUJUKAN (SEMENTARA)
+  // NAVIGASI SURAT RUJUKAN
   void _bukaSuratRujukan(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Halaman Surat Rujukan belum tersedia.'),
+        content: Text(
+          'Halaman Surat Rujukan belum tersedia.',
+        ),
       ),
     );
+  }
+
+  // MENGUBAH STATUS PASIEN
+  void _ubahStatus(Pasien pasien, String statusBaru) {
+    setState(() {
+      pasien.status = statusBaru;
+    });
+  }
+
+  // WARNA STATUS
+  Color _warnaStatus(String status) {
+    switch (status) {
+      case 'Selesai':
+        return const Color(0xFF269B7B);
+      case 'Diperiksa':
+        return const Color(0xFF3478D4);
+      default:
+        return const Color(0xFFD99424);
+    }
+  }
+
+  Color _backgroundStatus(String status) {
+    switch (status) {
+      case 'Selesai':
+        return const Color(0xFFE4F7EF);
+      case 'Diperiksa':
+        return const Color(0xFFE8F1FF);
+      default:
+        return const Color(0xFFFFF3D9);
+    }
   }
 
   @override
@@ -77,11 +121,15 @@ class DashboardDokter extends StatelessWidget {
             padding: const EdgeInsets.only(right: 20),
             child: InkWell(
               onTap: () {
+                // Opsional: jalankan fungsi onLogout dulu jika ada (misal untuk hapus token/session)
+                if (widget.onLogout != null) {
+                  widget.onLogout!();
+                }
+
+                // Langsung pindah ke LoginPage dan hapus semua rute sebelumnya
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const app.LoginPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                   (route) => false,
                 );
               },
@@ -118,7 +166,6 @@ class DashboardDokter extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             const Text(
               'Minggu, 27 September 2026',
               style: TextStyle(color: Colors.grey),
@@ -144,12 +191,10 @@ class DashboardDokter extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // KARTU PRAKTIK HARI INI
             _buildTodayCard(),
 
             const SizedBox(height: 24),
 
-            // RINGKASAN HARI INI
             _buildSectionTitle(
               'Ringkasan hari ini',
               'Pembaruan pelayanan pasien',
@@ -162,27 +207,23 @@ class DashboardDokter extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildStatCard(
-                    '24',
+                    '${pasienList.length}',
                     'Total pasien',
                     Colors.blue,
                   ),
                 ),
-
                 const SizedBox(width: 8),
-
                 Expanded(
                   child: _buildStatCard(
-                    '08',
+                    '${pasienList.where((p) => p.status == 'Menunggu').length}',
                     'Belum diperiksa',
                     Colors.orange,
                   ),
                 ),
-
                 const SizedBox(width: 8),
-
                 Expanded(
                   child: _buildStatCard(
-                    '16',
+                    '${pasienList.where((p) => p.status == 'Selesai').length}',
                     'Sudah diperiksa',
                     Colors.teal,
                   ),
@@ -193,8 +234,6 @@ class DashboardDokter extends StatelessWidget {
             const SizedBox(height: 28),
 
             // ANTREAN PASIEN
-            // BAGIAN AKSES CEPAT SUDAH DIHAPUS
-
             _buildSectionTitle(
               'Antrean pasien',
               'Daftar pasien hari ini',
@@ -206,48 +245,46 @@ class DashboardDokter extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // PASIEN 1
-            _buildPatientCard(
-              queueNumber: 'A-017',
-              name: 'Budi Santoso',
-              details: '45 tahun • Laki-laki',
-              status: 'Selesai',
-              statusColor: const Color(0xFF269B7B),
-              statusBackground: const Color(0xFFE4F7EF),
-              onRekamMedis: () => _bukaAntrean(context),
-              onBuatResep: () => _bukaResep(context),
-              onSuratRujukan: () => _bukaSuratRujukan(context),
-            ),
+            // DATA PASIEN DARI data_pasien.dart
+            if (pasienList.isEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Column(
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 40,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 8),
+                    Text('Belum ada data pasien.'),
+                  ],
+                ),
+              ),
 
-            const SizedBox(height: 12),
-
-            // PASIEN 2
-            _buildPatientCard(
-              queueNumber: 'A-018',
-              name: 'Siti Aminah',
-              details: '32 tahun • Perempuan',
-              status: 'Diperiksa',
-              statusColor: const Color(0xFF3478D4),
-              statusBackground: const Color(0xFFE8F1FF),
-              onRekamMedis: () => _bukaAntrean(context),
-              onBuatResep: () => _bukaResep(context),
-              onSuratRujukan: () => _bukaSuratRujukan(context),
-            ),
-
-            const SizedBox(height: 12),
-
-            // PASIEN 3
-            _buildPatientCard(
-              queueNumber: 'A-019',
-              name: 'Andi Pratama',
-              details: '27 tahun • Laki-laki',
-              status: 'Menunggu',
-              statusColor: const Color(0xFFD99424),
-              statusBackground: const Color(0xFFFFF3D9),
-              onRekamMedis: () => _bukaAntrean(context),
-              onBuatResep: () => _bukaResep(context),
-              onSuratRujukan: () => _bukaSuratRujukan(context),
-            ),
+            ...pasienList.map((pasien) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildPatientCard(
+                  pasien: pasien,
+                  onRekamMedis: () => _bukaAntrean(context),
+                  onBuatResep: () {
+                    _bukaResep(context, pasien);
+                  },
+                  onSuratRujukan: () {
+                    _bukaSuratRujukan(context);
+                  },
+                  onUbahStatus: (status) {
+                    _ubahStatus(pasien, status);
+                  },
+                ),
+              );
+            }),
 
             const SizedBox(height: 24),
           ],
@@ -295,9 +332,7 @@ class DashboardDokter extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-
               const SizedBox(width: 8),
-
               const Expanded(
                 child: Text(
                   'PRAKTIK HARI INI',
@@ -307,7 +342,6 @@ class DashboardDokter extends StatelessWidget {
                   ),
                 ),
               ),
-
               const Text(
                 'Detail',
                 style: TextStyle(
@@ -315,7 +349,6 @@ class DashboardDokter extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
-
               const Icon(
                 Icons.chevron_right,
                 color: Colors.white,
@@ -358,7 +391,6 @@ class DashboardDokter extends StatelessWidget {
                   ),
                 ],
               ),
-
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -396,9 +428,9 @@ class DashboardDokter extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          Row(
+          const Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Progress pemeriksaan',
                   style: TextStyle(
@@ -407,8 +439,7 @@ class DashboardDokter extends StatelessWidget {
                   ),
                 ),
               ),
-
-              const Text(
+              Text(
                 '16 dari 24 pasien',
                 style: TextStyle(
                   color: Colors.white,
@@ -443,9 +474,7 @@ class DashboardDokter extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               Text(
                 subtitle,
                 style: const TextStyle(
@@ -456,9 +485,7 @@ class DashboardDokter extends StatelessWidget {
             ],
           ),
         ),
-
         const SizedBox(width: 8),
-
         Padding(
           padding: const EdgeInsets.only(top: 6),
           child: trailing,
@@ -511,9 +538,7 @@ class DashboardDokter extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-
           const SizedBox(height: 6),
-
           Text(
             label,
             style: const TextStyle(
@@ -528,15 +553,11 @@ class DashboardDokter extends StatelessWidget {
 
   // KARTU ANTREAN PASIEN
   Widget _buildPatientCard({
-    required String queueNumber,
-    required String name,
-    required String details,
-    required String status,
-    required Color statusColor,
-    required Color statusBackground,
+    required Pasien pasien,
     required VoidCallback onRekamMedis,
     required VoidCallback onBuatResep,
     required VoidCallback onSuratRujukan,
+    required ValueChanged<String> onUbahStatus,
   }) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -547,7 +568,6 @@ class DashboardDokter extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // INFORMASI PASIEN
           Row(
             children: [
@@ -572,67 +592,106 @@ class DashboardDokter extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      queueNumber,
+                      pasien.nomorAntrean,
                       style: const TextStyle(
                         fontSize: 11,
                         color: mutedText,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
-                      name,
+                      pasien.nama,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: darkText,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
-                      details,
+                      '${pasien.umur} tahun • ${pasien.jenisKelamin}',
                       style: const TextStyle(
                         fontSize: 11,
+                        color: mutedText,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'ID: ${pasien.idPasien}',
+                      style: const TextStyle(
+                        fontSize: 10,
                         color: mutedText,
                       ),
                     ),
                   ],
                 ),
               ),
+            ],
+          ),
 
-              const SizedBox(width: 6),
+          const SizedBox(height: 12),
 
+          // DROPDOWN STATUS
+          Row(
+            children: [
+              const Text(
+                'Status pasien',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: darkText,
+                ),
+              ),
+              const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 9,
-                  vertical: 7,
+                  horizontal: 8,
+                  vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  color: statusBackground,
-                  borderRadius: BorderRadius.circular(20),
+                  color: _backgroundStatus(pasien.status),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  status,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: statusColor,
-                    fontWeight: FontWeight.w500,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: pasien.status,
+                    isDense: true,
+                    style: TextStyle(
+                      color: _warnaStatus(pasien.status),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'Menunggu',
+                        child: Text('Menunggu'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Diperiksa',
+                        child: Text('Diperiksa'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Selesai',
+                        child: Text('Selesai'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        onUbahStatus(value);
+                      }
+                    },
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
 
           const Divider(height: 1),
 
           const SizedBox(height: 12),
 
-          // TIGA TOMBOL AKSI
           const Text(
             'Aksi Pasien',
             style: TextStyle(
@@ -786,7 +845,6 @@ class DashboardDokter extends StatelessWidget {
                 isActive: true,
                 onTap: () {},
               ),
-
               _buildNavItem(
                 icon: Icons.people_outline_rounded,
                 label: 'Pasien',
@@ -795,16 +853,15 @@ class DashboardDokter extends StatelessWidget {
                   _bukaAntrean(context);
                 },
               ),
-
               _buildNavItem(
                 icon: Icons.medication_outlined,
                 label: 'Resep',
                 isActive: false,
                 onTap: () {
-                  _bukaResep(context);
+                  // Resep harus dibuat dari pasien yang dipilih.
+                  _bukaAntrean(context);
                 },
               ),
-
               _buildNavItem(
                 icon: Icons.person_outline_rounded,
                 label: 'Profil',
@@ -812,7 +869,9 @@ class DashboardDokter extends StatelessWidget {
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Halaman Profil belum tersedia.'),
+                      content: Text(
+                        'Halaman Profil belum tersedia.',
+                      ),
                     ),
                   );
                 },
@@ -847,9 +906,7 @@ class DashboardDokter extends StatelessWidget {
                 color: isActive ? activeColor : inactiveColor,
                 size: 24,
               ),
-
               const SizedBox(height: 5),
-
               Text(
                 label,
                 style: TextStyle(

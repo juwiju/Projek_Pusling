@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'antrean_dokter.dart';
+import '../models/pasien.dart';
 
 class RekamMedisPage extends StatefulWidget {
   final Pasien pasien;
@@ -174,7 +174,7 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Nomor antrean: ${widget.pasien.nomor}',
+                      'Nomor antrean: ${widget.pasien.nomorAntrean}',
                       style: const TextStyle(
                         color: Color(0xFF8290A0),
                         fontSize: 13,
@@ -182,7 +182,7 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                       'Umur: ${widget.pasien.umur}',
+                       'Umur: ${widget.pasien.umur} tahun',
                         style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xFF8290A0),
@@ -320,8 +320,8 @@ void simpanData() {
     'pasien': {
       'nama': widget.pasien.nama,
       'umur': widget.pasien.umur,
-      'nomor': widget.pasien.nomor,
-      'keterangan': widget.pasien.keterangan,
+      'nomor': widget.pasien.nomorAntrean,
+      'keterangan': widget.pasien.keterangan ?? widget.pasien.jenisKelamin,
     },
     'gejala': List<String>.from(gejalaDipilih),
     'keluhan': _keluhanController.text.trim(),
