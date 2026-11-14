@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/pasien.dart';
 
 class RekamMedisPage extends StatefulWidget {
@@ -10,22 +11,26 @@ class RekamMedisPage extends StatefulWidget {
   });
 
   @override
-  State<RekamMedisPage> createState() => _RekamMedisPageState();
+  State<RekamMedisPage> createState() =>
+      _RekamMedisPageState();
 }
 
 class _RekamMedisPageState extends State<RekamMedisPage> {
 
   // CONTROLLER
-  final TextEditingController _searchController =
+  final TextEditingController searchController =
       TextEditingController();
 
-  final TextEditingController _keluhanController =
+  final TextEditingController keluhanController =
       TextEditingController();
 
-  final TextEditingController _diagnosisController =
+  final TextEditingController diagnosisController =
       TextEditingController();
 
-  final TextEditingController _terapiController =
+  final TextEditingController terapiController =
+      TextEditingController();
+
+  final TextEditingController catatanController =
       TextEditingController();
 
   // DAFTAR GEJALA
@@ -47,119 +52,144 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
     'Ruam kulit',
   ];
 
+  // GEJALA DIPILIH
   final List<String> gejalaDipilih = [];
 
-  // WARNA APLIKASI
-  final Color biru = const Color(0xFF237BC5);
-  final Color biruMuda = const Color(0xFFE8F3FD);
-  final Color background = const Color(0xFFF3F7FA);
-  final Color teks = const Color(0xFF17243A);
+  // WARNA SAMA SEPERTI RESEP
+  final Color primaryColor = const Color(0xFF1689D3);
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _keluhanController.dispose();
-    _diagnosisController.dispose();
-    _terapiController.dispose();
-    super.dispose();
-  }
+  final Color backgroundColor = const Color(0xFFF7F9FC);
+
+  final Color textColor = const Color(0xFF243447);
+
+  final Color secondaryColor = const Color(0xFF7B8794);
+
   // DEKORASI INPUT
-  InputDecoration inputDecoration({
-    required String hint,
+  InputDecoration dekorasiInput({
+    required String label,
+    String? hint,
     Widget? prefixIcon,
   }) {
     return InputDecoration(
+      labelText: label,
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: Color(0xFFA7B0BC),
-        fontSize: 14,
-      ),
       prefixIcon: prefixIcon,
       filled: true,
-      fillColor: const Color(0xFFFBFCFD),
+      fillColor: Colors.white,
+      labelStyle: TextStyle(
+        color: secondaryColor,
+        fontSize: 13,
+      ),
+      hintStyle: TextStyle(
+        color: secondaryColor.withOpacity(0.7),
+        fontSize: 13,
+      ),
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 22,
+        horizontal: 16,
+        vertical: 15,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
-        borderSide: BorderSide(
-          color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: Color(0xFFE3EAF0),
         ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
-        borderSide: BorderSide(
-          color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: Color(0xFFE3EAF0),
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color: biru,
+          color: primaryColor,
           width: 1.5,
         ),
       ),
     );
   }
 
-  // LABEL FORM
-  Widget labelForm(String judul, {bool wajib = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Row(
-        children: [
-          Text(
-            judul,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF455166),
-              fontWeight: FontWeight.w500,
-            ),
+  // JUDUL BAGIAN
+  Widget judulBagian(
+    String judul, {
+    String? keterangan,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          judul,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
           ),
-          const SizedBox(width: 9),
+        ),
+        if (keterangan != null) ...[
+          const SizedBox(height: 4),
           Text(
-            wajib ? 'Wajib' : 'Opsional',
-            style: const TextStyle(
-              color: Color(0xFF7C8796),
+            keterangan,
+            style: TextStyle(
               fontSize: 12,
+              color: secondaryColor,
             ),
           ),
         ],
+      ],
+    );
+  }
+
+  // DEKORASI CARD
+  BoxDecoration dekorasiCard() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: const Color(0xFFE9EEF3),
       ),
     );
   }
 
-  // INFORMASI PASIEN
-  Widget dataPasien() {
+  // PESAN
+  void tampilkanPesan(String pesan) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(pesan),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: textColor,
+      ),
+    );
+  }
+    // INFORMASI PASIEN
+  Widget informasiPasien() {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 22,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFBFCFD),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
-      ),
+      padding: const EdgeInsets.all(18),
+      decoration: dekorasiCard(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          judulBagian(
+            'Informasi Pasien',
+            keterangan: 'Pasien yang akan diperiksa.',
+          ),
+
+          const SizedBox(height: 16),
+
           Row(
             children: [
               CircleAvatar(
-                radius: 23,
-                backgroundColor: biruMuda,
+                radius: 25,
+                backgroundColor: const Color(0xFFE8F4FC),
                 child: Icon(
-                  Icons.person_outline,
-                  color: biru,
-                  size: 27,
+                  Icons.person,
+                  color: primaryColor,
+                  size: 28,
                 ),
               ),
-              const SizedBox(width: 14),
+
+              const SizedBox(width: 12),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,28 +197,52 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
                     Text(
                       widget.pasien.nama,
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: teks,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
                     Text(
-                      'Nomor antrean: ${widget.pasien.nomorAntrean}',
-                      style: const TextStyle(
-                        color: Color(0xFF8290A0),
-                        fontSize: 13,
+                      'ID Pasien: ${widget.pasien.idPasien}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: secondaryColor,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
                     Text(
-                       'Umur: ${widget.pasien.umur} tahun',
-                        style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF8290A0),
+                      'Nomor Antrean: ${widget.pasien.nomorAntrean}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: secondaryColor,
                       ),
                     ),
                   ],
+                ),
+              ),
+            ],
+          ),
+
+          const Divider(height: 25),
+
+          Row(
+            children: [
+              Expanded(
+                child: detailPasien(
+                  'Umur',
+                  '${widget.pasien.umur} tahun',
+                ),
+              ),
+
+              Expanded(
+                child: detailPasien(
+                  'Jenis Kelamin',
+                  widget.pasien.jenisKelamin,
                 ),
               ),
             ],
@@ -197,68 +251,120 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
       ),
     );
   }
-  // PENCARIAN GEJALA
-  Widget pencarianGejala() {
+
+  // DETAIL PASIEN
+  Widget detailPasien(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: secondaryColor,
+          ),
+        ),
+
+        const SizedBox(height: 5),
+
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+      ],
+    );
+  }
+    // FORM GEJALA
+  Widget formGejala() {
     final hasilPencarian =
-        _searchController.text.length < 2
+        searchController.text.trim().length < 2
             ? <String>[]
             : daftarGejala.where((gejala) {
                 return gejala.toLowerCase().contains(
-                      _searchController.text.toLowerCase(),
-                    );
+                  searchController.text.toLowerCase().trim(),
+                );
               }).toList();
 
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFBFCFD),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
-      ),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(18),
+      decoration: dekorasiCard(),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          judulBagian(
+            'Gejala yang Dialami',
+            keterangan:
+                'Cari dan pilih gejala yang dialami pasien.',
+          ),
+
+          const SizedBox(height: 18),
+
+          // PENCARIAN GEJALA
           TextField(
-            controller: _searchController,
-            decoration: inputDecoration(
-              hint: 'Cari gejala...',
-              prefixIcon: const Icon(Icons.search),
-            ),
+            controller: searchController,
             onChanged: (_) {
               setState(() {});
             },
+            decoration: dekorasiInput(
+              label: 'Cari Gejala',
+              hint: 'Masukkan nama gejala...',
+              prefixIcon: Icon(
+                Icons.search,
+                color: primaryColor,
+              ),
+            ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
 
-          if (_searchController.text.length < 2)
-            const Text(
+          // PETUNJUK PENCARIAN
+          if (searchController.text.trim().length < 2)
+            Text(
               'Ketik minimal 2 huruf untuk mencari gejala.',
               style: TextStyle(
+                color: secondaryColor,
                 fontSize: 12,
-                color: Colors.grey,
               ),
             ),
 
-          if (_searchController.text.length >= 2 &&
+          // HASIL PENCARIAN KOSONG
+          if (searchController.text.trim().length >= 2 &&
               hasilPencarian.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: Text('Gejala tidak ditemukan.'),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                'Gejala tidak ditemukan.',
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontSize: 12,
+                ),
+              ),
             ),
 
+          // DAFTAR CHECKBOX
           ...hasilPencarian.map((gejala) {
             return CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               dense: true,
-              activeColor: Color(0xFF168BC2),
-              title: Text(gejala),
+              activeColor: primaryColor,
+              title: Text(
+                gejala,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                ),
+              ),
               value: gejalaDipilih.contains(gejala),
               onChanged: (value) {
                 setState(() {
                   if (value == true) {
-                    gejalaDipilih.add(gejala);
+                    if (!gejalaDipilih.contains(gejala)) {
+                      gejalaDipilih.add(gejala);
+                    }
                   } else {
                     gejalaDipilih.remove(gejala);
                   }
@@ -267,28 +373,26 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
             );
           }),
 
+          // DAFTAR GEJALA TERPILIH
           if (gejalaDipilih.isNotEmpty) ...[
-            const Divider(),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Gejala dipilih:',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
+            const Divider(height: 25),
+
+            judulBagian('Gejala Dipilih'),
+
+            const SizedBox(height: 12),
 
             Wrap(
               spacing: 6,
-              runSpacing: 5,
+              runSpacing: 6,
               children: gejalaDipilih.map((gejala) {
                 return Chip(
-                  backgroundColor: biruMuda,
+                  backgroundColor: const Color(0xFFE8F4FC),
                   label: Text(
                     gejala,
-                    style: TextStyle(color: biru),
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 12,
+                    ),
                   ),
                   onDeleted: () {
                     setState(() {
@@ -303,335 +407,440 @@ class _RekamMedisPageState extends State<RekamMedisPage> {
       ),
     );
   }
-
-
-void simpanData() {
-  if (_keluhanController.text.trim().isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Keluhan utama harus diisi.'),
-        backgroundColor: Colors.redAccent,
-      ),
-    );
-    return;
-  }
-
-  final dataRekamMedis = {
-    'pasien': {
-      'nama': widget.pasien.nama,
-      'umur': widget.pasien.umur,
-      'nomor': widget.pasien.nomorAntrean,
-      'keterangan': widget.pasien.keterangan ?? widget.pasien.jenisKelamin,
-    },
-    'gejala': List<String>.from(gejalaDipilih),
-    'keluhan': _keluhanController.text.trim(),
-    'diagnosis': _diagnosisController.text.trim(),
-    'terapi': _terapiController.text.trim(),
-  };
-
-  widget.pasien.status = 'Asesmen selesai';
-
-  debugPrint('DATA REKAM MEDIS: $dataRekamMedis');
-
-  Navigator.pop(context, dataRekamMedis);
-}
-
-    @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: background,
-
-      // HEADER APLIKASI
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 24,
-        title: Row(
-          children: [
-            Icon(
-              Icons.favorite_border,
-              color: biru,
-              size: 29,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              'Pusling+',
-              style: TextStyle(
-                color: biru,
-                fontSize: 21,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.symmetric(
-              vertical: 9,
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F6F9),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.notifications_none,
-                color: Color(0xFF17243A),
-                size: 27,
-              ),
-            ),
+    // FORM KELUHAN UTAMA
+  Widget formKeluhan() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: dekorasiCard(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          judulBagian(
+            'Keluhan Utama',
+            keterangan:
+                'Tuliskan keluhan yang disampaikan pasien.',
           ),
 
-          const SizedBox(width: 12),
+          const SizedBox(height: 14),
 
-          Container(
-            margin: const EdgeInsets.only(
-              right: 20,
-              top: 9,
-              bottom: 9,
-            ),
-            width: 54,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFF18A69A),
-                  Color(0xFF168BC2),
-                ],
+          TextField(
+            controller: keluhanController,
+            maxLines: 3,
+            decoration: dekorasiInput(
+              label: 'Keluhan Utama',
+              hint: 'Contoh: Demam sejak dua hari lalu...',
+              prefixIcon: const Icon(
+                Icons.edit_note,
               ),
-              borderRadius: BorderRadius.circular(18),
+            ).copyWith(
+              alignLabelWithHint: true,
             ),
-            alignment: Alignment.center,
-            child: const Text(
-              'DR',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // FORM DIAGNOSIS
+  Widget formDiagnosis() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: dekorasiCard(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          judulBagian(
+            'Diagnosis',
+            keterangan:
+                'Masukkan hasil diagnosis pasien.',
+          ),
+
+          const SizedBox(height: 14),
+
+          TextField(
+            controller: diagnosisController,
+            maxLines: 2,
+            decoration: dekorasiInput(
+              label: 'Diagnosis / Kode ICD-10',
+              hint: 'Masukkan diagnosis pasien...',
+              prefixIcon: const Icon(
+                Icons.medical_information_outlined,
               ),
             ),
           ),
         ],
       ),
+    );
+  }
 
-      // BODY
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          24,
-          30,
-          24,
-          35,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+  // FORM TERAPI
+  Widget formTerapi() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: dekorasiCard(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          judulBagian(
+            'Terapi',
+            keterangan:
+                'Tuliskan tindakan atau terapi yang diberikan.',
+          ),
 
-            // TOMBOL KEMBALI
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: biruMuda,
-                foregroundColor: biru,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
+          const SizedBox(height: 14),
+
+          TextField(
+            controller: terapiController,
+            maxLines: 4,
+            decoration: dekorasiInput(
+              label: 'Terapi',
+              hint: 'Tuliskan tindakan atau terapi...',
+              prefixIcon: const Icon(
+                Icons.healing_outlined,
               ),
-              child: const Text(
-                '‹ Kembali',
-                style: TextStyle(fontSize: 15),
-              ),
+            ).copyWith(
+              alignLabelWithHint: true,
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            const SizedBox(height: 15),
+  // CATATAN DOKTER
+  Widget catatanDokter() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: dekorasiCard(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          judulBagian(
+            'Catatan Dokter',
+            keterangan:
+                'Tambahkan catatan tambahan jika diperlukan.',
+          ),
 
-            // JUDUL REKAM MEDIS
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: biruMuda,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Icon(
-                    Icons.assignment_outlined,
-                    color: biru,
-                    size: 30,
-                  ),
-                ),
+          const SizedBox(height: 14),
 
-                const SizedBox(width: 20),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'DOKTER',
-                        style: TextStyle(
-                          color: biru,
-                          fontSize: 13,
-                          letterSpacing: 1,
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      Text(
-                        'Rekam medis',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: teks,
-                        ),
-                      ),
-
-                      const SizedBox(height: 5),
-
-                      const Text(
-                        'Catat keluhan, diagnosis, dan terapi pasien.',
-                        style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 30),
-
-            // FORM REKAM MEDIS
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: const Color(0xFFE3E9EF),
-                ),
+          TextField(
+            controller: catatanController,
+            maxLines: 4,
+            decoration: dekorasiInput(
+              label: 'Catatan',
+              hint: 'Tuliskan catatan tambahan...',
+              prefixIcon: const Icon(
+                Icons.notes,
               ),
+            ).copyWith(
+              alignLabelWithHint: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+    // SIMPAN REKAM MEDIS
+  void simpanData() {
+    if (gejalaDipilih.isEmpty) {
+      tampilkanPesan(
+        'Pilih minimal satu gejala pasien.',
+      );
+      return;
+    }
 
+    if (keluhanController.text.trim().isEmpty) {
+      tampilkanPesan(
+        'Keluhan utama harus diisi.',
+      );
+      return;
+    }
+
+    final dataRekamMedis = {
+      'pasien': {
+        'nama': widget.pasien.nama,
+        'umur': widget.pasien.umur,
+        'id': widget.pasien.idPasien,
+        'nomor': widget.pasien.nomorAntrean,
+        'jenisKelamin': widget.pasien.jenisKelamin,
+        'keterangan':
+            widget.pasien.keterangan ??
+            widget.pasien.jenisKelamin,
+      },
+      'gejala': List<String>.from(gejalaDipilih),
+      'keluhan': keluhanController.text.trim(),
+      'diagnosis': diagnosisController.text.trim(),
+      'terapi': terapiController.text.trim(),
+      'catatan': catatanController.text.trim(),
+    };
+
+    konfirmasiRekamMedis(dataRekamMedis);
+  }
+
+  // KONFIRMASI REKAM MEDIS
+  void konfirmasiRekamMedis(
+    Map<String, dynamic> dataRekamMedis,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+
+          title: const Text(
+            'Konfirmasi Rekam Medis',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-
-                  // DATA PASIEN
-                  labelForm('Pasien'),
-
-                  dataPasien(),
-
-                  const SizedBox(height: 20),
-
-                  // GEJALA
-                  labelForm('Gejala yang dialami', wajib: true,),
-
-                  pencarianGejala(),
-
-                  const SizedBox(height: 20),
-
-                  // KELUHAN UTAMA
-                  labelForm(
-                    'Keluhan utama',
-                    wajib: true,
-                  ),
-
-                  TextField(
-                    controller: _keluhanController,
-                    maxLines: 2,
-                    decoration: inputDecoration(
-                      hint: 'Keluhan yang disampaikan pasien',
+                  const Text(
+                    'Data Pasien',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
 
-                  // DIAGNOSIS
-                  labelForm('Diagnosis'),
+                  Text('Nama: ${widget.pasien.nama}'),
+                  Text('ID: ${widget.pasien.idPasien}'),
+                  Text('Umur: ${widget.pasien.umur} tahun'),
+                  Text(
+                    'Jenis Kelamin: ${widget.pasien.jenisKelamin}',
+                  ),
 
-                  TextField(
-                    controller: _diagnosisController,
-                    decoration: inputDecoration(
-                      hint: 'Diagnosis / kode ICD-10',
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Gejala Pasien',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
 
-                  // TERAPI
-                  labelForm('Terapi'),
+                  ...gejalaDipilih.asMap().entries.map(
+                    (entry) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        child: Text(
+                          '${entry.key + 1}. ${entry.value}',
+                        ),
+                      );
+                    },
+                  ),
 
-                  TextField(
-                    controller: _terapiController,
-                    maxLines: 4,
-                    decoration: inputDecoration(
-                      hint: 'Tindakan atau terapi yang diberikan',
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Keluhan Utama',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
 
-                  // TOMBOL SIMPAN
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF2179D0),
-                            Color(0xFF0D91AF),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.18),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton.icon(
-                        onPressed: simpanData,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.check,
-                          size: 20,
-                        ),
-                        label: const Text(
-                          'Simpan data',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                  Text(keluhanController.text.trim()),
+
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Diagnosis',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    diagnosisController.text.trim().isEmpty
+                        ? '-'
+                        : diagnosisController.text.trim(),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'Terapi',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    terapiController.text.trim().isEmpty
+                        ? '-'
+                        : terapiController.text.trim(),
+                  ),
+
+                  if (catatanController.text
+                      .trim()
+                      .isNotEmpty) ...[
+                    const Divider(height: 25),
+
+                    const Text(
+                      'Catatan Dokter',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
+
+                    const SizedBox(height: 8),
+
+                    Text(catatanController.text.trim()),
+                  ],
                 ],
               ),
             ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Periksa Lagi'),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+              ),
+
+              onPressed: () {
+                widget.pasien.status = 'Selesai';
+
+                Navigator.pop(dialogContext);
+
+                Navigator.pop(
+                  context,
+                  dataRekamMedis,
+                );
+              },
+
+              child: const Text('Konfirmasi'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+    // DISPOSE
+  @override
+  void dispose() {
+    searchController.dispose();
+    keluhanController.dispose();
+    diagnosisController.dispose();
+    terapiController.dispose();
+    catatanController.dispose();
+
+    super.dispose();
+  }
+
+  // BUILD
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backgroundColor,
+
+      // APP BAR
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: textColor,
+        elevation: 0,
+        title: const Text(
+          'Rekam Medis',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        centerTitle: false,
+      ),
+
+      // BODY
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // INFORMASI PASIEN
+            informasiPasien(),
+
+            const SizedBox(height: 20),
+
+            // GEJALA
+            formGejala(),
+
+            const SizedBox(height: 20),
+
+            // KELUHAN
+            formKeluhan(),
+
+            const SizedBox(height: 20),
+
+            // DIAGNOSIS
+            formDiagnosis(),
+
+            const SizedBox(height: 20),
+
+            // TERAPI
+            formTerapi(),
+
+            const SizedBox(height: 20),
+
+            // CATATAN DOKTER
+            catatanDokter(),
+
+            const SizedBox(height: 25),
+
+            // TOMBOL SIMPAN
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: simpanData,
+                icon: const Icon(
+                  Icons.save_outlined,
+                ),
+                label: const Text(
+                  'Simpan Rekam Medis',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
