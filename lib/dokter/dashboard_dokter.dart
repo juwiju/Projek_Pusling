@@ -1,7 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'antrean_dokter.dart' show AntreanPasienPage;
 import '../models/pasien.dart';
 import '../models/data_pasien.dart';
 import 'rekam_medis.dart';
@@ -22,29 +22,26 @@ class _DashboardDokterState extends State<DashboardDokter> {
   static const Color darkText = Color(0xFF243447);
   static const Color mutedText = Color(0xFF7B8794);
 
-  // NAVIGASI ANTREAN
-  void _bukaAntrean(BuildContext context) {
+  // NAVIGASI REKAM MEDIS
+  void _bukaRekamMedis(
+    BuildContext context,
+    Pasien pasien,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => AntreanPasienPage(
-          onPilihPasien: (Pasien pasien) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => RekamMedisPage(
-                  pasien: pasien,
-                ),
-              ),
-            );
-          },
+        builder: (_) => RekamMedisPage(
+          pasien: pasien,
         ),
       ),
-    );
+    ).then((hasil) {
+      if (hasil != null && mounted) {
+        setState(() {});
+      }
+    });
   }
 
-  // NAVIGASI BUAT RESEP
-  // Mengirim pasien yang dipilih ke halaman resep.
+  // NAVIGASI RESEP
   void _bukaResep(BuildContext context, Pasien pasien) {
     Navigator.push(
       context,
@@ -56,7 +53,7 @@ class _DashboardDokterState extends State<DashboardDokter> {
     );
   }
 
-  // NAVIGASI SURAT RUJUKAN
+  // SURAT RUJUKAN
   void _bukaSuratRujukan(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -237,15 +234,11 @@ class _DashboardDokterState extends State<DashboardDokter> {
             _buildSectionTitle(
               'Antrean pasien',
               'Daftar pasien hari ini',
-              trailing: TextButton(
-                onPressed: () => _bukaAntrean(context),
-                child: const Text('Lihat semua'),
-              ),
+              trailing: const SizedBox.shrink(),
             ),
 
             const SizedBox(height: 16),
 
-            // DATA PASIEN DARI data_pasien.dart
             if (pasienList.isEmpty)
               Container(
                 width: double.infinity,
@@ -272,7 +265,9 @@ class _DashboardDokterState extends State<DashboardDokter> {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _buildPatientCard(
                   pasien: pasien,
-                  onRekamMedis: () => _bukaAntrean(context),
+                  onRekamMedis: () {
+                    _bukaRekamMedis(context, pasien);
+                  },
                   onBuatResep: () {
                     _bukaResep(context, pasien);
                   },
@@ -291,12 +286,10 @@ class _DashboardDokterState extends State<DashboardDokter> {
         ),
       ),
 
-      // BOTTOM NAVIGATION
       bottomNavigationBar: _buildBottomNavigation(context),
     );
   }
 
-  // KARTU PRAKTIK HARI INI
   Widget _buildTodayCard() {
     return Container(
       width: double.infinity,
@@ -453,7 +446,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
     );
   }
 
-  // JUDUL BAGIAN
   Widget _buildSectionTitle(
     String title,
     String subtitle, {
@@ -551,7 +543,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
     );
   }
 
-  // KARTU ANTREAN PASIEN
   Widget _buildPatientCard({
     required Pasien pasien,
     required VoidCallback onRekamMedis,
@@ -568,7 +559,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // INFORMASI PASIEN
           Row(
             children: [
               Container(
@@ -631,7 +621,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
 
           const SizedBox(height: 12),
 
-          // DROPDOWN STATUS
           Row(
             children: [
               const Text(
@@ -687,9 +676,7 @@ class _DashboardDokterState extends State<DashboardDokter> {
           ),
 
           const SizedBox(height: 12),
-
           const Divider(height: 1),
-
           const SizedBox(height: 12),
 
           const Text(
@@ -705,7 +692,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
 
           Row(
             children: [
-              // REKAM MEDIS
               Expanded(
                 child: OutlinedButton(
                   onPressed: onRekamMedis,
@@ -741,7 +727,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
 
               const SizedBox(width: 6),
 
-              // BUAT RESEP
               Expanded(
                 child: OutlinedButton(
                   onPressed: onBuatResep,
@@ -777,7 +762,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
 
               const SizedBox(width: 6),
 
-              // SURAT RUJUKAN
               Expanded(
                 child: OutlinedButton(
                   onPressed: onSuratRujukan,
@@ -817,7 +801,6 @@ class _DashboardDokterState extends State<DashboardDokter> {
     );
   }
 
-  // BOTTOM NAVIGATION
   Widget _buildBottomNavigation(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -845,23 +828,33 @@ class _DashboardDokterState extends State<DashboardDokter> {
                 isActive: true,
                 onTap: () {},
               ),
+
               _buildNavItem(
                 icon: Icons.people_outline_rounded,
                 label: 'Pasien',
                 isActive: false,
-                onTap: () {
-                  _bukaAntrean(context);
-                },
+                onTap: () {},
               ),
+
               _buildNavItem(
                 icon: Icons.medication_outlined,
                 label: 'Resep',
                 isActive: false,
                 onTap: () {
-                  // Resep harus dibuat dari pasien yang dipilih.
-                  _bukaAntrean(context);
+                  if (pasienList.isNotEmpty) {
+                    _bukaResep(context, pasienList.first);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Belum ada pasien untuk dibuatkan resep.',
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
+
               _buildNavItem(
                 icon: Icons.person_outline_rounded,
                 label: 'Profil',
@@ -914,7 +907,9 @@ class _DashboardDokterState extends State<DashboardDokter> {
                   fontWeight: isActive
                       ? FontWeight.w600
                       : FontWeight.normal,
-                  color: isActive ? activeColor : inactiveColor,
+                  color: isActive
+                      ? activeColor
+                      : inactiveColor,
                 ),
               ),
             ],
