@@ -26,7 +26,32 @@ class PuslingPlusApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Pusling+',
       locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
+      
+      builder: (context, child) {
+        return DevicePreview.appBuilder(
+          context,
+          Builder(
+            builder: (context) {
+              final mediaQuery = MediaQuery.of(context);
+              final width = mediaQuery.size.width;
+
+              final scale = width >= 900
+                  ? 1.30
+                  : width >= 600
+                      ? 1.20
+                      : 1.0;
+
+              return MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: TextScaler.linear(scale),
+                ),
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
+          ),
+        );
+      },
+
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
@@ -261,83 +286,91 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final headerHeight = constraints.maxHeight * 0.29;
+    final mediaQuery = MediaQuery.of(context);
+    final isTablet = mediaQuery.size.width >= 600;
 
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: headerHeight,
-                  child: const _Header(),
+    return MediaQuery(
+      data: mediaQuery.copyWith(
+        textScaler: TextScaler.linear(isTablet ? 1.25 : 1.0),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final headerHeight = constraints.maxHeight * 0.29;
+
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: headerHeight,
+                    child: const _Header(),
+                  ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(22),
-                      topRight: Radius.circular(22),
+                SliverToBoxAdapter(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(22),
+                        topRight: Radius.circular(22),
+                      ),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                    child: _LoginForm(
+                      selectedRole: selectedRole,
+                      onRoleChanged: (role) {
+                        setState(() => selectedRole = role);
+                      },
+                      usernameController: usernameController,
+                      passwordController: passwordController,
+                      obscurePassword: obscurePassword,
+                      onPasswordVisibilityChanged: () {
+                        setState(() => obscurePassword = !obscurePassword);
+                      },
+                      rememberMe: rememberMe,
+                      onRememberChanged: (value) {
+                        setState(() => rememberMe = value);
+                      },
+                      selectedRoleName: selectedRoleName,
+                      onForgotPassword: showForgotPassword,
+                      onLogin: () {
+                        Widget destinationPage;
+
+                        switch (selectedRole) {
+                          case UserRole.apoteker:
+                            destinationPage = DashboardApoteker();
+                            break;
+                          case UserRole.dokter:
+                            destinationPage = const DashboardDokter();
+                            break;
+                          case UserRole.petugas:
+                            destinationPage = const Main();
+                            break;
+                          case UserRole.puskesmas:
+                            destinationPage = const Main();
+                            break;
+                        }
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => destinationPage,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                  child: _LoginForm(
-                    selectedRole: selectedRole,
-                    onRoleChanged: (role) {
-                      setState(() => selectedRole = role);
-                    },
-                    usernameController: usernameController,
-                    passwordController: passwordController,
-                    obscurePassword: obscurePassword,
-                    onPasswordVisibilityChanged: () {
-                      setState(() => obscurePassword = !obscurePassword);
-                    },
-                    rememberMe: rememberMe,
-                    onRememberChanged: (value) {
-                      setState(() => rememberMe = value);
-                    },
-                    selectedRoleName: selectedRoleName,
-                    onForgotPassword: showForgotPassword,
-                    onLogin: () {
-                      Widget destinationPage;
-
-                      switch (selectedRole) {
-                        case UserRole.apoteker:
-                          destinationPage = DashboardApoteker();
-                          break;
-                        case UserRole.dokter:
-                          destinationPage = const DashboardDokter();
-                          break;
-                        case UserRole.petugas:
-                          destinationPage = const Main();
-                          break;
-                        case UserRole.puskesmas:
-                          destinationPage = const Main();
-                          break;
-                      }
-
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => destinationPage,
-                        ),
-                      );
-                    },
-                  ),
                 ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 8)),
-            ],
-          );
-        },
+                const SliverToBoxAdapter(child: SizedBox(height: 8)),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -461,7 +494,9 @@ class _HeaderContent extends StatelessWidget {
         ),
         const SizedBox(height: 9),
         SizedBox(
-          width: 255,
+          width: MediaQuery.of(context).size.width >= 600
+            ? 420
+            : 255,
           child: Text(
             'Pelayanan kesehatan keliling yang lebih\n'
             'cepat, terhubung, dan transparan.',
@@ -506,6 +541,8 @@ class _LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -531,11 +568,11 @@ class _LoginForm extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: UserRole.values.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 9,
             mainAxisSpacing: 8,
-            childAspectRatio: 2.42,
+            childAspectRatio: isTablet ? 5.5 : 2.42,
           ),
           itemBuilder: (context, index) {
             final role = UserRole.values[index];
